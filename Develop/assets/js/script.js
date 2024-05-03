@@ -16,7 +16,7 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 function createTaskCard(task) {
   return `
-      <div class="card task-card" id="task-${task.id}" style="background-color: ${task.color};">
+      <div class="card task-card moving" id="task-${task.id}" style="background-color: ${task.color};">
         <div class="card-body">
           <h5 class="card-title">${task.title}</h5>
           <p class="card-text">${task.description}</p>
@@ -37,6 +37,8 @@ function renderTaskList() {
   inProgressColumn.empty();
   doneColumn.empty();
 
+
+
   taskList.forEach((task) => {
     const cardHtml = createTaskCard(task);
     switch (task.status) {
@@ -51,6 +53,10 @@ function renderTaskList() {
         break;
     }
   });
+  $(".moving").draggable({
+    opacity: 0.5,
+    zIndex: 100
+  })
 }
 
 // Todo: create a function to handle adding a new task
@@ -91,6 +97,7 @@ function handleDeleteTask(taskId) {
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
+  console.log("EEEEE")
   const newStatus = ui.item.parent().attr("id");
   const taskId = parseInt(ui.item.attr("id").split("-")[1]);
   const task = taskList.find((task) => task.id === taskId);
@@ -110,36 +117,46 @@ function handleDrop(event, ui) {
   renderTaskList();
 }
 
+
+
+
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
   taskList = JSON.parse(localStorage.getItem("tasks")) || [];
   nextId = JSON.parse(localStorage.getItem("nextId")) || 1;
 
   renderTaskList();
+  $(".lane").droppable({
+    accept: ".moving",
+    drop: handleDrop
+  }
+  )
+  
+  
+  // $(".lane").sortable({
+  //   connectWith: ".lane",
+  //   stop: function (event, ui) {
+  //     const newStatus = ui.item.parent().attr("id");
+  //     const taskId = parseInt(ui.item.attr("id").split("-")[1]);
+  //     const task = taskList.find((t) => t.id === taskId);
+  //     if (task) {
+  //       switch (newStatus) {
+  //         case "to-do":
+  //           task.status = "To Do";
+  //           break;
+  //         case "in-progress":
+  //           task.status = "In Progress";
+  //           break;
+  //         case "done":
+  //           task.status = "Done";
+  //           break;
+  //       }
+  //       localStorage.setItem("tasks", JSON.stringify(taskList));
+  //       renderTaskList();
+  //     }
+  //   },
+  // });
 
-  $(".lane").sortable({
-    connectWith: ".lane",
-    stop: function (event, ui) {
-      const newStatus = ui.item.parent().attr("id");
-      const taskId = parseInt(ui.item.attr("id").split("-")[1]);
-      const task = taskList.find((t) => t.id === taskId);
-      if (task) {
-        switch (newStatus) {
-          case "to-do":
-            task.status = "To Do";
-            break;
-          case "in-progress":
-            task.status = "In Progress";
-            break;
-          case "done":
-            task.status = "Done";
-            break;
-        }
-        localStorage.setItem("tasks", JSON.stringify(taskList));
-        renderTaskList();
-      }
-    },
-  });
 
   $("#task-deadline").datepicker({
     dateFormat: "yy-mm-dd",
