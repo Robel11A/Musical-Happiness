@@ -3,4 +3,4 @@
 # Intoroduction
 
 ## Screenshots
-View screenshots of the application [here](https://robel11a.github.io/Musical-Happiness/).
+View screenshots of the application ![screenshot](images/screenshot.png)
